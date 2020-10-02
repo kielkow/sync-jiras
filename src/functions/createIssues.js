@@ -20,12 +20,12 @@ module.exports = async (
 
 	const subIssuesNotCreated = issuesNotCreated.filter(issue => issue.fields.parent);
 
-	for (originIssueNotCreated of originIssuesNotCreated) {
+	for (let i = originIssuesNotCreated.length - 1; i >= 0; i--) {
 		const formattedCreateIssue = await linkapi.dt.transform('create-issue', 
 			projectId, 
-			originIssueNotCreated.fields.summary, 
-			originIssueNotCreated.fields.description,
-			originIssueNotCreated.fields.issuetype.name
+			originIssuesNotCreated[i].fields.summary, 
+			originIssuesNotCreated[i].fields.description,
+			originIssuesNotCreated[i].fields.issuetype.name
 		);
 
 		const issue = await jiraDestination.request('POST', 'issue', { body: formattedCreateIssue });
@@ -35,19 +35,19 @@ module.exports = async (
 				type: 'issue',
 				origin,
 				destination,
-				from: originIssueNotCreated.id,
+				from: originIssuesNotCreated[i].id,
 				to: issue.body.id
 			}
 		});
 	}
 
-	for (subIssueNotCreated of subIssuesNotCreated) {
+	for (let i = subIssuesNotCreated.length - 1; i >= 0; i--) {
 		let issue;
 
 		const parentDestination = await MongoDW.request('GET', 'tickets_wardrobe', {
 			queryString: {
 				type: 'issue',
-				from: subIssueNotCreated.fields.parent.id
+				from: subIssuesNotCreated[i].fields.parent.id
 			}
 		});
 
@@ -55,9 +55,9 @@ module.exports = async (
 			const formattedCreateSubIssue = await linkapi.dt.transform('create-subissue',
 				parentDestination[0].to,
 				projectId,
-				subIssueNotCreated.fields.summary,
-				subIssueNotCreated.fields.description,
-				subIssueNotCreated.fields.issuetype.name
+				subIssuesNotCreated[i].fields.summary,
+				subIssuesNotCreated[i].fields.description,
+				subIssuesNotCreated[i].fields.issuetype.name
 			);
 
 			issue = await jiraDestination.request('POST', 'issue', {
@@ -67,9 +67,9 @@ module.exports = async (
 		else {
 			const formattedCreateIssue = await linkapi.dt.transform('create-issue',
 				projectId,
-				subIssueNotCreated.fields.summary,
-				subIssueNotCreated.fields.description,
-				subIssueNotCreated.fields.parent.fields.issuetype.name
+				subIssuesNotCreated[i].fields.summary,
+				subIssuesNotCreated[i].fields.description,
+				subIssuesNotCreated[i].fields.parent.fields.issuetype.name
 			);
 
 			issue = await jiraDestination.request('POST', 'issue', { body: formattedCreateIssue });
@@ -80,7 +80,7 @@ module.exports = async (
 				type: 'issue',
 				origin,
 				destination,
-				from: subIssueNotCreated.id,
+				from: subIssuesNotCreated[i].id,
 				to: issue.body.id
 			}
 		});
