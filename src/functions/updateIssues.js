@@ -24,7 +24,7 @@ module.exports = async (issuesFromTo, projectKey, origin, destination) => {
 
 			const destinationIssueDetails = destinationIssuesToUpdate.body.issues.find(issue => issue.id === destinationIssue.to);
 
-			if (originIssue.fields.status.name !== "Done" && destinationIssueDetails.fields.status.name !== "Done") {
+			if (originIssue.fields.status.name !== "Done" || destinationIssueDetails.fields.status.name !== "Done") {
 				const assignee = await linkapi.function.execute('getMember', destination, projectKey, originIssue.fields.assignee.displayName);
 
 				const comments = await linkapi.function.execute('getComments', originIssue.id, jiraOrigin);
