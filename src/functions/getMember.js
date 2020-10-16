@@ -8,8 +8,9 @@ module.exports = async (jiraName, projectKey, memberName) => {
 	}
 
 	if (member.length > 1) {
-		const oldestMember = member[member.length-1];
-		return oldestMember;
+		const newestMember = member[member.length-1];
+
+		return newestMember;
 	}
 
 	return member[0];

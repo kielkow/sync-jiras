@@ -1,4 +1,10 @@
-module.exports = async (issuesFromTo, projectKey, origin, destination) => {
+module.exports = async (
+	issuesFromTo, 
+	projectKeyOrigin, 
+	projectKeyDestination, 
+	origin, 
+	destination
+) => {
 	if (issuesFromTo.length !== 0) {
 		const jiraOrigin = require("./JiraStrategy.js")[origin]
 		const jiraDestination = require("./JiraStrategy.js")[destination]
@@ -25,7 +31,22 @@ module.exports = async (issuesFromTo, projectKey, origin, destination) => {
 			const destinationIssueDetails = destinationIssuesToUpdate.body.issues.find(issue => issue.id === destinationIssue.to);
 
 			if (originIssue.fields.status.name !== "Done" || destinationIssueDetails.fields.status.name !== "Done") {
-				const assignee = await linkapi.function.execute('getMember', destination, projectKey, originIssue.fields.assignee.displayName);
+				let assignee = await linkapi.function.execute(
+					'getMember', 
+					destination, 
+					projectKeyDestination,
+					originIssue.fields.assignee.displayName
+				);
+
+				if (!assignee) {
+					assignee = await linkapi.function.execute(
+						'getAdmFromProjects', 
+						origin, 
+						destination, 
+						projectKeyOrigin, 
+						projectKeyDestination
+					);
+				}
 
 				const comments = await linkapi.function.execute('getComments', originIssue.id, jiraOrigin);
 	
