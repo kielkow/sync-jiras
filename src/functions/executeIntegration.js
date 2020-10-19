@@ -4,7 +4,7 @@ module.exports = async (
 	queryProjectA, 
 	queryProjectB, 
 	jiraProjectA, 
-	jiraProjectB
+	jiraProjectB,
 ) => {
 	const MongoDW = new linkapi.Component('MongoDW', {});
 
@@ -60,10 +60,10 @@ module.exports = async (
 	await linkapi.function.execute(
 		'updateIssues', 
 		issuesFromToprojectB, 
+		projectInfoB.project.jey,
 		projectInfoA.project.key,
-		projectInfoB.project.key,
-		jiraProjectA,
 		jiraProjectB,
+		jiraProjectA,
 	);
 
 	// Inverted Update from projectA to projectB
@@ -72,9 +72,9 @@ module.exports = async (
 	await linkapi.function.execute(
 		'updateIssues', 
 		convertedIssuesFromToprojectB, 
-		projectInfoB.project.jey,
-		projectInfoA.project.key,
-		jiraProjectB,
+		projectInfoA.project.jey,
+		projectInfoB.project.key,
 		jiraProjectA,
+		jiraProjectB,
 	);
 };
