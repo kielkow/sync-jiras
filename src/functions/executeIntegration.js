@@ -7,12 +7,10 @@ module.exports = async (
 	jiraProjectB
 ) => {
 	const MongoDW = new linkapi.Component('MongoDW', {});
-	
-	// 1° - Process of creating and updating from projectA to projectB
+
 	// Create Issues from projectA to projectB
 	await linkapi.function.execute('createIssues',
 		projectInfoB.project.id,
-		projectInfoB.members,
 		queryProjectA,
 		jiraProjectA,
 		jiraProjectB,
@@ -33,7 +31,7 @@ module.exports = async (
 	);
 
 	// Inverted Update from projectB to projectA
-	const convertedIssuesFromToprojectA = issuesFromToprojectA.map(issue => ({ from: issue.to, to: issue.from, }));
+	const convertedIssuesFromToprojectA = issuesFromToprojectA.map(issue => ({ from: issue.to, to: issue.from }));
 	
 	await linkapi.function.execute(
 		'updateIssues', 
@@ -46,11 +44,9 @@ module.exports = async (
 
 	//----------------------------------------------------------------------------------------------------------------------------------//
 
-	// 2° Process of creating and updating from projectB to projectA
 	// Create Issues from projectB to projectA
 	await linkapi.function.execute('createIssues',
 		projectInfoA.project.id,
-		projectInfoA.members,
 		queryProjectB,
 		jiraProjectB,
 		jiraProjectA,
@@ -71,7 +67,7 @@ module.exports = async (
 	);
 
 	// Inverted Update from projectA to projectB
-	const convertedIssuesFromToprojectB = issuesFromToprojectB.map(issue => ({ from: issue.to, to: issue.from, }));
+	const convertedIssuesFromToprojectB = issuesFromToprojectB.map(issue => ({ from: issue.to, to: issue.from }));
 	
 	await linkapi.function.execute(
 		'updateIssues', 
